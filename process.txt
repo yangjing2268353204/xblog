@@ -1,0 +1,127 @@
+1.初始化项目
+    1.创建项目根目录blog 
+        创建public目录,放置静态资源
+        创建views目录,用以放置模板文件
+        
+    1.初始化项目描述文件npm init -y 全部使用默认参数(依赖第三方文件)
+        初始化多一个包package.json
+    2.建立项目主文件app.js 
+    3.创建web服务器要先下载express框架 npm install express 
+        --save把当前下载的文件记录到package.json    
+    4.创建web服务器
+
+//项目初步搭建起来了!!!!
+
+放到github中 : 首先在项目根目录中打开git brash here, 打开窗口
+5.初始化本地仓库,才能推到远程
+    1.git init 项目根目录下初始化本地仓库 / git status 查看弄好的本地仓库
+  /node_modules忽略这个文件
+  添加到暂存区git add . ---把项目初始化添加到仓库 git commit -m提交到远程仓库
+     git log查看提交项目, 
+6.
+    1.为远程仓库起别名
+    2.提交 git push -u origin master 
+        -u 记录当前提交的仓库别名与分支名称
+    3.添加readme.md 文件
+    
+
+7.配置模板引擎:
+    1.告诉express项目使用的是哪个模板
+    2.指定模板目录/后缀
+    3.所有文件后缀改成handlebars
+    4.设置路由
+        1.将首页公共部分抽离,要不然都要改文件地址css
+        2.在engine中修改,文件
+        3.引入公共部分,相同的HTML也要抽离出来放到layouts文件夹
+        4.模板文件所在目录  配置默认的HTML模板'home'
+        5.配置公共模板路径
+        6.配置前端路由,两个文件index about
+    
+
+
+
+    2.路由设置
+        1.创建主路由:前后端主路由分开
+        express.Router()创建前端一级路由
+        当有请求来的时候,以/home开头,走前端路由
+        关联
+        express.Router()创建后端一级路由
+        当有请求来的时候,以/admin开头,走后端路由
+        改模板路径
+
+        ---有前台后台页面,要把路由把前后端主路由分开打开页面
+            访问后台页面需要验证身份
+
+        2.配置后端路由,把公共部分抽离出来
+            1.创建后台的骨架文件,占位,改名handlebars后缀
+                当前模板要继承后台的模板,下边再加layout:'admin
+            2.设置页面路由:
+                添加文章页面路由 改add.handlebars,模板公共部分删除
+                add.get('/list')(req,res)=>{
+                    res.render({
+                        layout:'admin'
+                    })
+                }
+                抽取公共部分 骨架部分
+                区分前后端公共部分: 解决同名文件:配置中添加一个属性namespace:;admin/home 引入模板中前边添加/admin
+
+            3.首页导航链接header链接,实现页面跳转
+            4.目录blog专门文件放路由问题,
+            将前端主路由开放进去modle.exports,前端文件导入开发出去,导入前端路由模块,
+            前后端一级路由,拿到大怒文件,导入别的文件,缓存中拿
+
+
+
+    3.数据库配置:
+        1.下载第三方模块 mysql  npm install mysql --save
+        2.引入数据库连接,mysql.creatConnecTion({}) 
+        3..query查询数据库(select * from blog,(err,rows)=>{})//服务器链接成功
+            app.js主要做配置 home.js/admin.js 做逻辑,需要做数据库配置,
+            将链接代放置在单独的目录中,将数据路连接对象暴露出去,再引入
+            故把配置数据库的 再做成一个model目录/db.js,  
+            module.exports()导出  引入文件  
+
+        项目结构搭建添加到暂存区 提交到本地仓库 git push 到远程仓库
+
+    4.实现业务逻辑:
+        浏览器  ---  服务器 --- 数据库
+        1.点击事件,获取注册信息,格式验证
+           > 监听form标签的submit事件,阻止表单的默认提交行为,我们要用ajax提交
+           > $.fn.serilizeToJson表单提交文件,引入到common.js在public文件夹中,验证弹1成功,调用
+           > 表单调用$(this).serrilizeToJson(),是根据表单的name值获取的
+           > 前端请求,路由:处理注册逻辑,后端接收前端带回来的参数,post借第三方模块:body-parser下载引入
+           > 使用前要配置,传递过来的哪种参数3中,告诉他,搜npmjs.com,看哪种代码处理这种数据name=张三age=20
+             告诉body-parser模块为我处理application/x-www-form-urlencoded类型的参数,nodejs中querystring转换对象
+           > 输出结果证明是在后端返回的数据,req.body 是对象 要解构,接收,验证   原生 jq
+
+        2.向服务器端发送注册请求携带注册信息,接收注册结果,并进行相应处理
+
+        1.后端接收前要设计路由,才能接收
+        2.接收注册信息,后端也要验证格式,是否已注册信息,前端不写,后端更要严格
+        3.查询用户名是否注册,没注册就插入到数据库,根据数据库的反馈结果给前端做出响应
+
+        1.向数据库插入注册信息,数据库插入成功/失败返回结果给数据库,数据库再对客户端响应
+
+        1.注册
+            > 表单信息接收 ->post传递过来的参数,
+            >查询用户名是否已经被注册:发送查询请求,先判断rows
+            >将注册信息添加到数据库,发送SQL请求,响应后端的数据,密码加密
+        2.登录
+            >接收请求要routes路由,home.处理登录业务逻辑
+            >接收前台的post参数,用req.body,看是否能接收到参数res.send()
+            >后台拿到参数,查询数据库中是否有用户i名这条数据,密码比对,
+            >mysql只要查询,都是数组,传的和数据库做比对
+        3.删除第三方模块 用指令 npm install 自动下载到文件
+        4.>用户信息存储在session,为用户生成唯一id,保存登录状态,
+        session仅仅是对象,全局的,在任何一个页面都可以访问的到,开发者可任意存储数据
+        nodejs要用session,需要使用第三方模块express-session
+        保存在cookie中
+        1.当客户端发来请求的时候,自动解析cookie中存储的sessionID
+        2.看一下sessionID在服务 端的session列表中是否存在
+        3.如果存在用户是登录的状态
+
+
+        由于http协议无状态,需要通过session和cookie技术来存储用户状态,我们通过模块实现session存储
+        ,使用方式
+        session内部做了很多事情:1.生成唯一的sessionID ,将id通过cookie存储在客户端
+        当客户端项服务器端发送请求,会自动发送id参数
